@@ -55,6 +55,26 @@ O **Meu Bolso** é uma aplicação web para uma pessoa controlar o próprio dinh
 
 A descrição completa de cada requisito está no [Documento de Requisitos](Requisitos/Meu_Bolso_Documento_de_Requisitos_v2.docx), na pasta `Requisitos/`.
 
+
+### Protótipo das interfaces
+
+O protótipo do Meu Bolso está disponível no Figma:
+
+[Acessar o protótipo das interfaces](https://www.figma.com/design/5ttDYEP4jiga6eF7KJ71s4?node-id=4-1273)
+
+A versão inicial apresenta telas de acesso, painel financeiro, extrato,
+categorias, contas a pagar e desejos, além de formulários e confirmações.
+As telas estão identificadas pelos nomes das interfaces e pelos códigos
+dos requisitos funcionais relacionados.
+
+Para explorar os fluxos, abra a tela I_Login no Figma e utilize a opção
+de apresentação do protótipo. Os botões e menus conectam as telas.
+
+O protótipo utiliza dados demonstrativos e não está conectado ao
+back-end ou ao banco de dados. Ainda estão pendentes estados específicos
+de edição, mensagens adicionais de erro, formulário de nova senha e
+adaptações para telas menores.
+
 ---
 
 ## 2. Instruções para uso
