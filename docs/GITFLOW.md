@@ -21,25 +21,27 @@ Regras de ouro:
 
 ## 2. Nome das branches
 
-Padrão: `feature/<area>-<descricao-curta>`, tudo minúsculo e com hífen.
+Padrão: `feature/<código>-<descrição-curta>`, tudo minúsculo e com hífen. O código é o do requisito (`RF010`) ou o da tarefa (`E3`); para documentação, use `docs`.
 
 Exemplos:
 
-- `feature/login-jwt`
-- `feature/categorias-crud`
-- `feature/transacoes-extrato`
-- `feature/dashboard-resumo-mensal`
-- `feature/contas-fixas-status`
-- `feature/metas-desejos`
+- `feature/RF002-entrar-no-sistema`
+- `feature/RF006-cadastrar-categoria`
+- `feature/RF010-registrar-lancamento`
+- `feature/RF025-resumo-do-mes`
+- `feature/RF014-cadastrar-conta-a-pagar`
+- `feature/RF021-cadastrar-desejo`
+- `feature/E3-esqueleto-frontend`
+- `feature/docs-regras-git`
 - `hotfix/login-token-expirado`
 
-Divisão de áreas do grupo (troquem A, B e C pelos nomes):
+Divisão de áreas do grupo (igual à planilha "Meu Bolso: plano de trabalho por sprint"). Cada pessoa faz tela, rotas e tabelas do seu módulo:
 
-| Pessoa | Áreas (tela + rotas + tabelas) |
-|---|---|
-| A | transações, extrato e dashboard |
-| B | login, categorias e perfil (e a base do projeto) |
-| C | contas fixas e metas/desejos |
+| Pessoa | Nome | Módulos | Requisitos |
+|---|---|---|---|
+| A | (preencher) | Acesso, Categorias e Metas | RF001 a RF009 e RF021 a RF024 |
+| B | Gabriel Duarte Paiva | Lançamentos e Painel | RF010 a RF013 e RF025 a RF027 |
+| C | (preencher) | Contas a pagar e Orçamento | RF014 a RF020 |
 
 ## 3. Passo a passo de uma tarefa (feature)
 
@@ -48,7 +50,7 @@ Divisão de áreas do grupo (troquem A, B e C pelos nomes):
    ```bash
    git checkout dev
    git pull origin dev
-   git checkout -b feature/transacoes-extrato
+   git checkout -b feature/RF010-registrar-lancamento
    ```
 
 2. Trabalhe e faça commits pequenos (veja o padrão na seção 5).
@@ -62,7 +64,7 @@ Divisão de áreas do grupo (troquem A, B e C pelos nomes):
 4. Envie a branch para o GitHub:
 
    ```bash
-   git push -u origin feature/transacoes-extrato
+   git push -u origin feature/RF010-registrar-lancamento
    ```
 
 5. No GitHub, abra um **pull request para a `dev`** (não para a `main`) e peça revisão a outra pessoa.
@@ -80,7 +82,7 @@ Divisão de áreas do grupo (troquem A, B e C pelos nomes):
 
 O PR deve ter:
 
-- Título no mesmo padrão dos commits, por exemplo `feat: lista de transações no extrato`.
+- Título no mesmo padrão dos commits, por exemplo `feat(RF011): lista de lançamentos no extrato`.
 - Descrição curta: o que mudou e como testar.
 - Print da tela, quando for mudança visual.
 
@@ -95,16 +97,30 @@ Quem revisa deve responder no mesmo dia. Revisão rápida vale mais que revisão
 
 ## 5. Mensagens de commit
 
-Formato: `tipo: descrição curta no imperativo`.
+Formato: `tipo(código): descrição curta`, em minúsculas e sem ponto final. O código entre parênteses é o do requisito (`RF010`) ou da tarefa (`E3`, `#21`) e dá rastreabilidade entre commit, issue e requisito. Quando não houver código, use só `tipo: descrição`.
 
 | Tipo | Quando usar | Exemplo |
 |---|---|---|
-| `feat` | Funcionalidade nova | `feat: rota de listar transações` |
-| `fix` | Correção de bug | `fix: filtro de entradas no extrato` |
-| `docs` | Documentação | `docs: atualiza README` |
-| `refactor` | Reorganizar código sem mudar comportamento | `refactor: separa serviço de contas fixas` |
-| `test` | Testes | `test: cobre login com senha errada` |
-| `chore` | Configuração e tarefas gerais | `chore: adiciona .env.example` |
+| `feat` | Funcionalidade nova | `feat(RF011): rota de listar lançamentos do mês` |
+| `fix` | Correção de bug | `fix(RF011): filtro de entradas no extrato` |
+| `docs` | Documentação | `docs: atualiza regras de Git no README` |
+| `refactor` | Reorganizar código sem mudar comportamento | `refactor(RF014): separa serviço de contas a pagar` |
+| `test` | Testes | `test(RF002): cobre login com senha errada` |
+| `chore` | Configuração e tarefas gerais | `chore: completa o .gitignore` |
+
+Commits pequenos e frequentes, de todos os integrantes. O professor confere se cada pessoa tem vários commits ao longo da sprint.
+
+## 5.1 Onde fica documentação e onde fica código
+
+- Código do back-end: `back-end/app/modules/<módulo>/` (rotas, regras e schemas) e `back-end/app/models/` (tabelas).
+- Código do front-end: `front-end/src/features/<módulo>/`.
+- Testes: `teste/unidade/`, `teste/validacao/` e `teste/selenium/`.
+- Documento de requisitos, protótipo e casos de uso (`.asta`): `Requisitos/`.
+- Diagramas de design (classes, pacotes, sequência, implantação), com `.asta` e figuras: `docs/diagramas/`.
+- Padrões do grupo: `Padroes Adotados/`.
+- Documentação do processo, como este arquivo: `docs/`.
+
+Documentação não fica dentro de `back-end/` nem de `front-end/`, e código não fica em `docs/`, `Requisitos/` nem `Padroes Adotados/`. A estrutura completa está na seção 5 do [README](../README.md).
 
 ## 6. Entrega: da `dev` para a `main`
 
