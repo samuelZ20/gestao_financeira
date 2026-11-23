@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.modules.acesso.router import router as acesso_router
 
 app = FastAPI(title="Meu Bolso API")
 
@@ -10,6 +11,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(acesso_router)
 
 
 @app.get("/hello")

@@ -14,3 +14,11 @@ SessionLocal = sessionmaker(bind=engine)
 
 class Base(DeclarativeBase):
     pass
+
+def get_db():
+    """Abre uma sessão com o banco para a requisição e fecha ao final."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
