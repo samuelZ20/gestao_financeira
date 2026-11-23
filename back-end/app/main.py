@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.database import Base, SessionLocal, engine
+from app.core.database import SessionLocal
 from app.models import Teste
 
-Base.metadata.create_all(bind=engine)  # cria as tabelas que ainda não existem
 
 app = FastAPI(title="Meu Bolso API")
 
