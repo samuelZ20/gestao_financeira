@@ -1,11 +1,39 @@
 # Python
 .venv/
+venv/
 __pycache__/
+*.py[cod]
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Cobertura de testes (o relatório HTML entregue fica em teste/cobertura/)
+.coverage
+.coverage.*
+htmlcov/
 
 # Node
 node_modules/
 dist/
+dist-ssr/
 
-# Variáveis de ambiente
+# Variáveis de ambiente (o .env.example continua versionado)
 .env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini

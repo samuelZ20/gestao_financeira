@@ -16,7 +16,7 @@ class Base(DeclarativeBase):
     pass
 
 def get_db():
-    """Abre uma sessão com o banco para a requisição e fecha ao final."""
+    """Abre uma sessão do banco para cada requisição e fecha no final."""
     db = SessionLocal()
     try:
         yield db
