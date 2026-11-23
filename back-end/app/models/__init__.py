@@ -1,1 +1,1 @@
-from app.models.teste import Teste
+from app.models.usuario import Usuario
