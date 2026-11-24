@@ -31,8 +31,8 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
-    op.drop_table('teste')
-    # ### end Alembic commands ###
+    op.execute('DROP TABLE IF EXISTS teste')  # num banco novo a tabela teste não existe
+        # ### end Alembic commands ###
 
 
 def downgrade() -> None:
