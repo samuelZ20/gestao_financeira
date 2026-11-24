@@ -17,6 +17,7 @@ from sqlalchemy.pool import StaticPool
 from app.core.database import Base, get_db
 from app.main import app
 from app.models import Categoria, Usuario
+from app.core.deps import get_usuario_atual_id
 
 
 @pytest.fixture()
@@ -46,5 +47,7 @@ def db():
 @pytest.fixture()
 def client(db):
     app.dependency_overrides[get_db] = lambda: db
+    # Os testes de lançamentos rodam como o usuário 1, sem precisar fazer login
+    app.dependency_overrides[get_usuario_atual_id] = lambda: 1
     yield TestClient(app)
     app.dependency_overrides.clear()
