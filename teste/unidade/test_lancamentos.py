@@ -7,6 +7,7 @@ from datetime import date
 
 from app.core.database import Base
 from app.models import Lancamento
+from app.models import ContaPagar
 
 
 def novo(client, **extra):
@@ -131,28 +132,19 @@ def test_excluir_inexistente_da_404(client):
 
 # ---------- RN10: lançamento gerado por conta paga ----------
 def test_rn10_lancamento_de_conta_paga_nao_pode_ser_alterado_nem_excluido(client, db):
-    """Simula a tabela conta_pagar (da pessoa C) apontando para o lançamento."""
-    from sqlalchemy import Column, ForeignKey, Integer, Table
-
-    conta_pagar = Table(
-        "conta_pagar", Base.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("lancamento_id", Integer, ForeignKey("lancamento.id")),
+    id_ = novo(client).json()["id"]
+    db.add(
+        ContaPagar(
+            usuario_id=1, categoria_id=2, descricao="Almoço", valor="120.00",
+            vencimento=date(2026, 11, 10), status="paga", lancamento_id=id_,
+        )
     )
-    conta_pagar.create(db.get_bind())
-    try:
-        id_ = novo(client).json()["id"]
-        db.execute(conta_pagar.insert().values(id=1, lancamento_id=id_))
-        db.commit()
+    db.commit()
 
-        corpo = {"tipo": "despesa", "descricao": "x", "valor": "1", "categoria_id": 2}
-        r1 = client.put(f"/lancamentos/{id_}", json=corpo)
-        r2 = client.delete(f"/lancamentos/{id_}")
-        assert r1.status_code == 409 and r2.status_code == 409
-        assert "conta a pagar" in r1.json()["detail"]
-        item = client.get("/lancamentos", params={"ano": 2026, "mes": 11}).json()["itens"][0]
-        assert item["gerado_por_conta"] is True
-    finally:
-        db.rollback()
-        Base.metadata.remove(conta_pagar)
-        conta_pagar.drop(db.get_bind())
+    corpo = {"tipo": "despesa", "descricao": "x", "valor": "1", "categoria_id": 2}
+    r1 = client.put(f"/lancamentos/{id_}", json=corpo)
+    r2 = client.delete(f"/lancamentos/{id_}")
+    assert r1.status_code == 409 and r2.status_code == 409
+    assert "conta a pagar" in r1.json()["detail"]
+    item = client.get("/lancamentos", params={"ano": 2026, "mes": 11}).json()["itens"][0]
+    assert item["gerado_por_conta"] is True
