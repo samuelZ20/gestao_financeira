@@ -4,10 +4,9 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.security import gerar_hash_senha
+from app.core.security import criar_token_acesso, gerar_hash_senha, verificar_senha
 from app.models import Usuario
-from app.modules.acesso.schemas import CadastroEntrada
-
+from app.modules.acesso.schemas import CadastroEntrada, LoginEntrada
 
 def criar_usuario(db: Session, dados: CadastroEntrada) -> Usuario:
     """RF001: cadastra um usuário novo, com a senha guardada só como hash."""
@@ -31,3 +30,16 @@ def criar_usuario(db: Session, dados: CadastroEntrada) -> Usuario:
     db.commit()
     db.refresh(usuario)  # busca de volta o id e a data_cadastro gerados pelo banco
     return usuario
+
+def autenticar(db: Session, dados: LoginEntrada) -> str:
+    """RF002: confere e-mail e senha e devolve o token de acesso."""
+    usuario = db.scalar(select(Usuario).where(Usuario.email == dados.email.lower()))
+
+    # Mesma mensagem para e-mail inexistente e senha errada (fluxo alternativo do RF002)
+    if usuario is None or not verificar_senha(dados.senha, usuario.senha_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="E-mail ou senha inválidos.",
+        )
+
+    return criar_token_acesso(usuario.id)

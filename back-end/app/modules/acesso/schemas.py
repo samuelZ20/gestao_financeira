@@ -36,3 +36,18 @@ class UsuarioResposta(BaseModel):
     id: int
     nome: str
     email: str
+
+class LoginEntrada(BaseModel):
+    """Dados que o front-end envia na tela I_Login (RF002)."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    email: EmailStr
+    senha: str
+
+
+class TokenResposta(BaseModel):
+    """O crachá entregue no login. O front guarda e envia em toda requisição."""
+
+    access_token: str
+    token_type: str = "bearer"
