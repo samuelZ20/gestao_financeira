@@ -13,6 +13,8 @@ from sqlalchemy import select
 
 from app.models import Categoria, Lancamento
 from app.modules.categorias.service import CATEGORIAS_PADRAO
+from datetime import date
+from app.models import ContaPagar, Orcamento
 
 
 def nova(client, **extra):
@@ -217,51 +219,33 @@ def test_rn22_cadastro_de_usuario_cria_as_9_categorias_padrao(client, db):
     assert all(c.padrao for c in categorias)
 
 
-# ---------- Tabelas de outros módulos que ainda não existem ----------
-def _tabela_temporaria(db, nome: str):
-    """Simula uma tabela de outra pessoa (conta_pagar, orcamento) com categoria_id."""
-    from sqlalchemy import Column, ForeignKey, Integer, Table
-
-    from app.core.database import Base
-
-    tabela = Table(
-        nome, Base.metadata,
-        Column("id", Integer, primary_key=True),
-        Column("categoria_id", Integer, ForeignKey("categoria.id")),
-    )
-    tabela.create(db.get_bind())
-    return tabela
-
-
-def _remover_tabela(db, tabela) -> None:
-    from app.core.database import Base
-
-    db.rollback()
-    Base.metadata.remove(tabela)
-    tabela.drop(db.get_bind())
 
 
 def test_rn04_categoria_com_conta_a_pagar_nao_pode_ser_excluida(client, db):
-    conta_pagar = _tabela_temporaria(db, "conta_pagar")
-    try:
-        db.execute(conta_pagar.insert().values(id=1, categoria_id=3))
-        db.commit()
-        assert client.delete("/categorias/3").status_code == 409
-        r = client.put("/categorias/3", json={"nome": "Lazer", "tipo": "receita"})
-        assert r.status_code == 409 and r.json()["campo"] == "tipo"  # RN14
-    finally:
-        _remover_tabela(db, conta_pagar)
+    db.add(
+        ContaPagar(
+            usuario_id=1, categoria_id=3, descricao="Academia",
+            valor="75.00", vencimento=date(2026, 11, 25),
+        )
+    )
+    db.commit()
+
+    assert client.delete("/categorias/3").status_code == 409
+    r = client.put("/categorias/3", json={"nome": "Lazer", "tipo": "receita"})
+    assert r.status_code == 409 and r.json()["campo"] == "tipo"
 
 
 def test_rf009_excluir_categoria_apaga_os_limites_de_orcamento(client, db):
-    orcamento = _tabela_temporaria(db, "orcamento")
-    try:
-        db.execute(orcamento.insert().values(id=1, categoria_id=3))
-        db.commit()
-        assert client.delete("/categorias/3").status_code == 204
-        assert db.execute(orcamento.select()).first() is None
-    finally:
-        _remover_tabela(db, orcamento)
+    db.add(
+        Orcamento(
+            usuario_id=1, categoria_id=3, mes=11,
+            ano=2026, valor_limite="150.00",
+        )
+    )
+    db.commit()
+
+    assert client.delete("/categorias/3").status_code == 204
+    assert db.scalar(select(Orcamento).where(Orcamento.categoria_id == 3)) is None
 
 
 def test_rn21_banco_recusa_duplicada_mesmo_se_a_conferencia_falhar(client, monkeypatch):
