@@ -2,6 +2,7 @@ import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import RotaProtegida from './components/RotaProtegida'
 import { useAuth } from './context/authContext'
 import Cadastro from './pages/Cadastro'
+import Categorias from './pages/Categorias'
 import Extrato from './pages/Extrato'
 import Login from './pages/Login'
 
@@ -13,6 +14,7 @@ export default function App() {
       {estaLogado && (
         <nav style={{ display: 'flex', gap: 16, padding: '12px 24px' }}>
           <Link to="/extrato">Extrato</Link>
+          <Link to="/categorias">Categorias</Link>
           {/* RF003: Sair descarta o token; a RotaProtegida leva para o login */}
           <button type="button" onClick={sair}>
             Sair
@@ -27,6 +29,14 @@ export default function App() {
           element={
             <RotaProtegida>
               <Extrato />
+            </RotaProtegida>
+          }
+        />
+        <Route
+          path="/categorias"
+          element={
+            <RotaProtegida>
+              <Categorias />
             </RotaProtegida>
           }
         />
