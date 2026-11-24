@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.security import criar_token_acesso, gerar_hash_senha, verificar_senha
 from app.models import Usuario
 from app.modules.acesso.schemas import CadastroEntrada, LoginEntrada
+from app.modules.categorias.service import criar_categorias_padrao
 
 def criar_usuario(db: Session, dados: CadastroEntrada) -> Usuario:
     """RF001: cadastra um usuário novo, com a senha guardada só como hash."""
@@ -27,7 +28,9 @@ def criar_usuario(db: Session, dados: CadastroEntrada) -> Usuario:
         politica_aceita_em=datetime.now(),  # RN15: guarda quando aceitou
     )
     db.add(usuario)
-    db.commit()
+    db.flush()  # manda o INSERT ao banco (sem confirmar) para o usuario ganhar um id
+    criar_categorias_padrao(db, usuario.id)
+    db.commit()  # usuário e categorias são salvos juntos (NF005)
     db.refresh(usuario)  # busca de volta o id e a data_cadastro gerados pelo banco
     return usuario
 
