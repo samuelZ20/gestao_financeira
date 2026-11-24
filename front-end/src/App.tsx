@@ -1,6 +1,7 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import RotaProtegida from './components/RotaProtegida'
 import { useAuth } from './context/authContext'
+import Cadastro from './pages/Cadastro'
 import Extrato from './pages/Extrato'
 import Login from './pages/Login'
 
@@ -20,6 +21,7 @@ export default function App() {
       )}
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
         <Route
           path="/extrato"
           element={

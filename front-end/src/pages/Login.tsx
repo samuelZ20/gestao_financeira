@@ -1,6 +1,6 @@
 // I_Login (RF002): formulário de entrada com e-mail e senha.
 import { useState, type FormEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/authContext'
 
@@ -54,6 +54,9 @@ export default function Login() {
           {enviando ? 'Entrando...' : 'Entrar no Meu Bolso'}
         </button>
       </form>
+      <p>
+        Não tem conta? <Link to="/cadastro">Criar conta</Link>
+      </p>
     </main>
   )
 }
