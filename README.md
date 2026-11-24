@@ -207,9 +207,6 @@ docker compose up -d
 REM Tabelas do banco
 cd back-end
 alembic upgrade head
-
-REM Dados provisórios de teste (usuário 1 e categorias), só até o login existir
-python -m app.core.seed_dev
 ```
 
 - O `.env` fica em `back-end\.env` e guarda a conexão com o banco (`DATABASE_URL`) e a chave do JWT (`SECRET_KEY`). Os valores do `.env.example` batem com o `docker-compose.yml`.
@@ -256,37 +253,16 @@ python -m pytest ..\teste\unidade --cov=app --cov-report=term-missing --cov-repo
 
 ### 3.5 Rotina de trabalho e regras de Git
 
-O passo a passo completo, com as configurações do GitHub, está em [docs/GITFLOW.md](docs/GITFLOW.md). Aqui ficam as regras que **todos** do grupo seguem.
-
-#### Branches
+O fluxo completo está em [docs/GITFLOW.md](docs/GITFLOW.md). Resumo:
 
 | Branch | Para que serve |
 |---|---|
 | `main` | Versões entregues (com tag `v1.0`, `v1.1`...). |
 | `dev` | Integração do time. Base de todo o trabalho; deve estar sempre rodando. |
-| `feature/*` | Uma tarefa (um RF, por exemplo). Nasce da `dev` e volta para a `dev` por pull request. |
+| `feature/*` | Uma tarefa (um RF). Nasce da `dev` e volta para a `dev` por pull request. |
 | `hotfix/*` | Correção urgente na versão da `main`. Volta para a `main` e para a `dev`. |
 
-**Nome da branch:** `feature/<código>-<descrição-curta>`, tudo em minúsculas e com hífen. O código é o do requisito (`RF010`) ou o da tarefa (`E3`); para documentação, use `docs`.
-
-Exemplos: `feature/RF010-registrar-lancamento`, `feature/E3-esqueleto-frontend`, `feature/docs-regras-git`, `hotfix/login-token-expirado`.
-
-#### Mensagens de commit
-
-Formato: `tipo(código): descrição curta`, em minúsculas e sem ponto final. O código entre parênteses é o do requisito ou da tarefa, para dar rastreabilidade entre commit, issue e RF.
-
-| Tipo | Quando usar | Exemplo |
-|---|---|---|
-| `feat` | Funcionalidade nova | `feat(RF010): rota de cadastro de lançamento` |
-| `fix` | Correção de bug | `fix(RF011): filtro por tipo no extrato` |
-| `docs` | Documentação | `docs: atualiza regras de Git no README` |
-| `refactor` | Reorganizar código sem mudar o comportamento | `refactor(RF014): separa serviço de contas a pagar` |
-| `test` | Testes | `test(RF002): cobre login com senha errada` |
-| `chore` | Configuração e tarefas gerais | `chore: completa o .gitignore` |
-
-Faça **commits pequenos e frequentes**, cada integrante com os seus. O professor confere se todos têm vários commits ao longo da sprint, e não só um no último dia.
-
-#### Rotina de cada tarefa
+**Rotina de cada tarefa:**
 
 1. Antes de começar, atualize a `dev`:
 
@@ -298,10 +274,10 @@ Faça **commits pequenos e frequentes**, cada integrante com os seus. O professo
 2. Crie a branch da tarefa com o código do requisito:
 
    ```bat
-   git checkout -b feature/RF010-registrar-lancamento
+   git checkout -b feature/RF010-cadastrar-lancamento
    ```
 
-3. Faça commits pequenos, com o código do RF na mensagem:
+3. Faça **commits pequenos**, com o código do RF na mensagem:
 
    ```bat
    git add .
@@ -311,45 +287,15 @@ Faça **commits pequenos e frequentes**, cada integrante com os seus. O professo
 4. **No fim do dia**, envie a branch para o GitHub:
 
    ```bat
-   git push -u origin feature/RF010-registrar-lancamento
+   git push -u origin feature/RF010-cadastrar-lancamento
    ```
 
-5. Ao terminar, traga as novidades da `dev` (`git pull origin dev`), resolva os conflitos e abra um pull request, conforme a próxima seção.
+5. Ao terminar, traga as novidades da `dev` (`git pull origin dev`), resolva os conflitos e abra um **pull request para a `dev`**, revisado por **outro integrante**.
 
-#### Pull request
-
-- O pull request vai **para a `dev`** (nunca para a `main`).
-- O título segue o padrão dos commits (ex.: `feat(RF010): registrar lançamento`) e a descrição diz o que mudou e como testar. Em mudança de tela, inclua um print.
-- Outro integrante revisa e aprova antes do merge. Ninguém aprova o próprio PR.
-- O merge é feito com **Squash and merge**, e a branch é apagada depois.
-- A `dev` só vai para a `main` na entrega de cada versão: PR de `dev` para `main`, merge com **Create a merge commit** e tag (`v0.3`, `v1.0`...).
-
-#### Onde fica cada coisa
-
-| O que | Onde |
-|---|---|
-| Código do back-end (rotas, regras, schemas) | `back-end/app/modules/<módulo>/` |
-| Tabelas do banco (models) | `back-end/app/models/` |
-| Código do front-end (telas, hooks, chamadas à API) | `front-end/src/features/<módulo>/` |
-| Testes de unidade, casos de validação e Selenium | `teste/unidade/`, `teste/validacao/`, `teste/selenium/` |
-| Documento de requisitos, protótipo e casos de uso (`.asta`) | `Requisitos/` |
-| Diagramas de design (classes, pacotes, sequência, implantação), com `.asta` e figuras | `docs/diagramas/` |
-| Padrões do grupo (regras de requisitos, boas práticas de código) | `Padroes Adotados/` |
-| Documentação do processo (Git Flow etc.) | `docs/` |
-
-Regra: documentação não fica dentro de `back-end/` nem de `front-end/`, e código não fica em `docs/`, `Requisitos/` nem `Padroes Adotados/`. A estrutura completa está na [seção 5](#5-organização-do-projeto).
-
-#### O que o `.gitignore` já ignora
-
-O `.gitignore` da raiz impede que estes arquivos entrem no repositório: `.env` (e `.env.*`, exceto o `.env.example`), `.venv/`, `node_modules/`, `dist/`, `__pycache__/`, `.pytest_cache/`, `.coverage`, `htmlcov/`, logs e pastas de editor (`.vscode/`, `.idea/`) e do sistema (`.DS_Store`, `Thumbs.db`). Se um arquivo novo que não deveria ser versionado aparecer no `git status`, acrescente-o ao `.gitignore` no mesmo commit.
-
-#### Nunca
+**Nunca:**
 
 - commitar direto na `main` ou na `dev`;
-- usar `git push --force` em branch compartilhada;
-- commitar `.env`, `.venv` ou `node_modules`, nem senhas e chaves em qualquer arquivo;
-- fazer merge do próprio pull request sem outra pessoa revisar;
-- deixar todo o trabalho para um único commit no fim da sprint.
+- commitar `.env`, `.venv` ou `node_modules` (já estão no `.gitignore`).
 
 ### 3.6 Ao mudar dependências ou tabelas
 
