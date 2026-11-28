@@ -208,12 +208,13 @@ REM Tabelas do banco
 cd back-end
 alembic upgrade head
 
-REM Dados provisórios de teste (usuário 1 e categorias), só até o login existir
-python -m app.core.seed_dev
+REM Chave do token de login (JWT): gere uma e cole em SECRET_KEY no back-end\.env
+python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
 - O `.env` fica em `back-end\.env` e guarda a conexão com o banco (`DATABASE_URL`) e a chave do JWT (`SECRET_KEY`). Os valores do `.env.example` batem com o `docker-compose.yml`.
 - **VS Code:** `Ctrl + Shift + P` > **Python: Select Interpreter** > escolha `back-end\.venv\Scripts\python.exe`.
+- **Primeiro acesso:** com o back e o front rodando, abra `http://localhost:5173` e crie sua conta em **Criar conta**. As categorias padrão são criadas junto.
 
 ### 3.3 Executar
 
@@ -470,15 +471,15 @@ Use `npm ci` (e não `npm install`): ele instala exatamente o que está no `pack
         *   **`back-end/app/modules/metas/`**: desejos/metas de compra (RF021–RF024).
         *   **`back-end/app/modules/painel/`**: dados do painel (RF025–RF027).
 *   **`front-end/`**: interface em React + TypeScript (Vite). Contém `package.json`, `package-lock.json` e as configurações do Vite, do TypeScript e do Oxlint.
-    *   **`front-end/context/`**: contextos globais do React (ex.: `AuthContext.tsx`, usuário logado e token).
-    *   **`front-end/lib/`**: configuração de bibliotecas (ex.: `axios.ts`, cliente HTTP da API).
-    *   **`front-end/routes/`**: definição das rotas/páginas (`AppRoutes.tsx`).
-    *   **`front-end/shared/`**: código reaproveitado por vários módulos.
-        *   **`front-end/shared/utils/`**: funções utilitárias (ex.: `formatCurrency.ts`).
     *   **`front-end/public/`**: arquivos estáticos servidos sem processamento (favicon, ícones).
-    *   **`front-end/src/`**: ponto de entrada da aplicação (`main.tsx`, `App.tsx`) e estilos globais.
+    *   **`front-end/src/`**: todo o código do front. `main.tsx` liga o React à página; `App.tsx` tem o menu e as rotas.
+        *   **`front-end/src/api/`**: cliente Axios (`api.ts`) que envia o token em toda requisição.
+        *   **`front-end/src/context/`**: estado de login (`AuthProvider.tsx` e `authContext.ts`).
+        *   **`front-end/src/components/`**: componentes usados por várias telas (ex.: `RotaProtegida.tsx`).
+        *   **`front-end/src/pages/`**: uma tela por arquivo (`Login`, `Cadastro`, `Categorias`, `Extrato`).
+        *   **`front-end/src/shared/utils/`**: funções utilitárias (ex.: `formatters.ts`, formatação de dinheiro e data).
         *   **`front-end/src/assets/`**: imagens importadas pelo código.
-        *   **`front-end/src/features/`**: uma pasta por módulo (`acesso`, `categorias`, `lancamentos`, `contas`, `orcamento`, `metas`, `painel`), cada uma com `components/` (telas e componentes), `hooks/` (lógica de estado) e `services/` (chamadas à API).
+        *   **`front-end/src/features/`**: uma pasta por módulo (`acesso`, `categorias`, `lancamentos`, `contas`, `orcamento`, `metas`, `painel`), cada uma com `components/` (componentes de tela), `hooks/` (lógica de estado) e `services/` (chamadas à API).
 *   **`Requisitos/`**: documento de requisitos (`Meu_Bolso_Documento_de_Requisitos_v2.docx`), arquivos `.asta` dos diagramas UML e protótipo das telas.
 *   **`Padroes Adotados/`**: padrões do grupo: regras de verificação e análise de requisitos, boas práticas de codificação e avaliação dos requisitos.
 *   **`teste/`**: testes e validação.
